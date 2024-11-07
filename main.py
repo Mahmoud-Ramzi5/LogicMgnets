@@ -44,7 +44,7 @@ class main:
             "rows": 4,
             "moves": 2,
             "pos_red": [],
-            "pos_purple": [(1, 3)],
+            "pos_purple": [(3, 1)],
             "pos_grey": [(1, 0), (1, 2), (2, 0), (2, 2)],
             "pos_white": [(0, 0), (1, 0), (3, 0), (0, 2), (1, 2)],
         },

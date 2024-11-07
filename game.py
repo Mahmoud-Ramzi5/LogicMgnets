@@ -12,6 +12,7 @@ class Game:
         self.grid = Grid(level)
         self.algo = Algo(self.logic)
         self.algo.BFS(self.grid)
+        # self.algo.DFS(self.grid)
         # print(self.grid)
         # self.run()
 

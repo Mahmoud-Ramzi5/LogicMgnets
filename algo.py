@@ -6,11 +6,12 @@ class Algo:
         self.logic = Logic
         self.visited = []
         self.queue = []
+        self.stack = []
 
     def BFS(self, grid):
         self.visited.append(deepcopy(grid))
 
-        # TODO check win
+        # check win
         if self.logic.checkWin(grid):
             print("BFS WON")
             return
@@ -32,3 +33,29 @@ class Algo:
         board = self.queue.pop(0)
         print(board)
         self.BFS(board)
+
+    def DFS(self, grid):
+        self.visited.append(deepcopy(grid))
+
+        # check win
+        if self.logic.checkWin(grid):
+            print("DFS WON")
+            return
+
+        for i in range(grid.rows):
+            for j in range(grid.cols):
+                if grid.arr[i][j].currVal == "🟣" or grid.arr[i][j].currVal == "🔴":
+                    for k in range(grid.rows):
+                        for l in range(grid.cols):
+                            temp = deepcopy(grid)
+                            if (
+                                temp.arr[k][l].currVal == "⚪"
+                                or temp.arr[k][l].currVal == "🟤"
+                            ):
+                                self.logic.moveCell(temp, (i, j), (k, l))
+                                if temp not in self.visited:
+                                    self.stack.append(temp)
+
+        board = self.stack.pop()
+        print(board)
+        self.DFS(board)
