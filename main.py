@@ -37,7 +37,7 @@ class main:
             "pos_red": [],
             "pos_purple": [(2, 0)],
             "pos_grey": [(1, 1), (3, 1)],
-            "pos_white": [(0, 0), (0, 2), (1, 4)],
+            "pos_white": [(0, 0), (0, 2), (4, 1)],
         },
         {
             "cols": 3,
