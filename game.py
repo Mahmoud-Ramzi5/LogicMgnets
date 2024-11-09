@@ -11,8 +11,10 @@ class Game:
         self.logic = GameLogic()
         self.grid = Grid(level)
         self.algo = Algo(self.logic)
-        self.algo.BFS(self.grid)
+        # self.algo.BFS(self.grid)
         # self.algo.DFS(self.grid)
+        self.algo.DFS_moves(self.grid, deepcopy(self.moves))
+
         # print(self.grid)
         # self.run()
 
@@ -35,7 +37,7 @@ class Game:
                     dest = (int(x.strip()) - 1, int(y.strip()) - 1)
                     if self.logic.checkDestination(self.grid, dest):
                         self.states.append(deepcopy(self.grid))
-                        self.logic.moveCell(source, dest)
+                        self.logic.moveCell(self.grid, source, dest)
                         print(self.grid)
                         if self.logic.checkWin(self.grid):
                             print("You Win")
@@ -106,34 +108,15 @@ class GameLogic:
         self.pullCells(grid, dest, (dest[0] - 1, dest[1]))
         self.pullCells(grid, dest, (dest[0] + 1, dest[1]))
 
-    def pushRightCells(self, grid, rootCell, currCell):
-        if not grid.inGrid(currCell[0], currCell[1]):
-            return
-
-        # Push right cells
-        if (
-            grid.inGrid(currCell[0], currCell[1] + 1)
-            and (
-                (grid.arr[currCell[0]][currCell[1]].getCurrVal() != "🟤")
-                and (grid.arr[currCell[0]][currCell[1]].getCurrVal() != "⚪")
-            )
-            and (
-                (grid.arr[currCell[0]][currCell[1] + 1].getCurrVal() == "🟤")
-                or (grid.arr[currCell[0]][currCell[1] + 1].getCurrVal() == "⚪")
-            )
-        ):
-            grid.arr[currCell[0]][currCell[1] + 1].setCurrVal(
-                grid.arr[currCell[0]][currCell[1]].getCurrVal()
-            )
-            grid.arr[currCell[0]][currCell[1]].setCurrVal(
-                grid.arr[currCell[0]][currCell[1]].initVal
-            )
-            return
-        self.pushRightCells(grid, rootCell, (currCell[0], currCell[1] + 1))
-
     def pushLeftCells(self, grid, rootCell, currCell):
         if not grid.inGrid(currCell[0], currCell[1]):
             return
+
+        if grid.inGrid(currCell[0], currCell[1] - 1) and (
+            (grid.arr[currCell[0]][currCell[1] - 1].getCurrVal() != "🟤")
+            and (grid.arr[currCell[0]][currCell[1] - 1].getCurrVal() != "⚪")
+        ):
+            self.pushLeftCells(grid, rootCell, (currCell[0], currCell[1] - 1))
 
         # Push left cells
         if (
@@ -153,12 +136,45 @@ class GameLogic:
             grid.arr[currCell[0]][currCell[1]].setCurrVal(
                 grid.arr[currCell[0]][currCell[1]].initVal
             )
+
+    def pushRightCells(self, grid, rootCell, currCell):
+        if not grid.inGrid(currCell[0], currCell[1]):
             return
-        self.pushLeftCells(grid, rootCell, (currCell[0], currCell[1] - 1))
+
+        if grid.inGrid(currCell[0], currCell[1] + 1) and (
+            (grid.arr[currCell[0]][currCell[1] + 1].getCurrVal() != "🟤")
+            and (grid.arr[currCell[0]][currCell[1] + 1].getCurrVal() != "⚪")
+        ):
+            self.pushRightCells(grid, rootCell, (currCell[0], currCell[1] + 1))
+
+        # Push right cells
+        if (
+            grid.inGrid(currCell[0], currCell[1] + 1)
+            and (
+                (grid.arr[currCell[0]][currCell[1]].getCurrVal() != "🟤")
+                and (grid.arr[currCell[0]][currCell[1]].getCurrVal() != "⚪")
+            )
+            and (
+                (grid.arr[currCell[0]][currCell[1] + 1].getCurrVal() == "🟤")
+                or (grid.arr[currCell[0]][currCell[1] + 1].getCurrVal() == "⚪")
+            )
+        ):
+            grid.arr[currCell[0]][currCell[1] + 1].setCurrVal(
+                grid.arr[currCell[0]][currCell[1]].getCurrVal()
+            )
+            grid.arr[currCell[0]][currCell[1]].setCurrVal(
+                grid.arr[currCell[0]][currCell[1]].initVal
+            )
 
     def pushTopCells(self, grid, rootCell, currCell):
         if not grid.inGrid(currCell[0], currCell[1]):
             return
+
+        if grid.inGrid(currCell[0] - 1, currCell[1]) and (
+            (grid.arr[currCell[0] - 1][currCell[1]].getCurrVal() != "🟤")
+            and (grid.arr[currCell[0] - 1][currCell[1]].getCurrVal() != "⚪")
+        ):
+            self.pushTopCells(grid, rootCell, (currCell[0] - 1, currCell[1]))
 
         # Push top cells
         if (
@@ -178,12 +194,16 @@ class GameLogic:
             grid.arr[currCell[0]][currCell[1]].setCurrVal(
                 grid.arr[currCell[0]][currCell[1]].initVal
             )
-            return
-        self.pushTopCells(grid, rootCell, (currCell[0] - 1, currCell[1]))
 
     def pushBottomCells(self, grid, rootCell, currCell):
         if not grid.inGrid(currCell[0], currCell[1]):
             return
+
+        if grid.inGrid(currCell[0] + 1, currCell[1]) and (
+            (grid.arr[currCell[0] + 1][currCell[1]].getCurrVal() != "🟤")
+            and (grid.arr[currCell[0] + 1][currCell[1]].getCurrVal() != "⚪")
+        ):
+            self.pushBottomCells(grid, rootCell, (currCell[0] + 1, currCell[1]))
 
         # Push bottom cells
         if (
@@ -203,8 +223,6 @@ class GameLogic:
             grid.arr[currCell[0]][currCell[1]].setCurrVal(
                 grid.arr[currCell[0]][currCell[1]].initVal
             )
-            return
-        self.pushBottomCells(grid, rootCell, (currCell[0] + 1, currCell[1]))
 
     def pullCells(self, grid, rootCell, currCell):
         if not grid.inGrid(currCell[0], currCell[1]):
