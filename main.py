@@ -82,7 +82,7 @@ class main:
             "pos_red": [],
             "pos_purple": [(0, 0)],
             "pos_grey": [(0, 3), (0, 5)],
-            "pos_white": [(0, 1), (0, 3), (0, 5)],
+            "pos_white": [(0, 1), (0, 3), (0, 6)],
         },
         {  # 10
             "cols": 4,

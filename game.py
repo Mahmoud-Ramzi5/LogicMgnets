@@ -10,11 +10,14 @@ class Game:
         self.states = []
         self.logic = GameLogic()
         self.grid = Grid(level)
-        self.algo = Algo(self.logic)
+        self.algo = Algo(self.logic, self.level)
         # self.algo.BFS(self.grid)
         # self.algo.DFS(self.grid)
-        self.algo.DFS_moves(self.grid, deepcopy(self.moves))
-
+        # self.algo.DFS_moves(self.grid, deepcopy(self.moves))
+        # self.algo.CallUCS(self.grid)
+        sol = self.algo.hill_climb(self.grid)
+        print(sol[1], end='')
+        print(f"current cost: {sol[0]}")
         # print(self.grid)
         # self.run()
 
