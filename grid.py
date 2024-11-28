@@ -1,5 +1,6 @@
 class Grid:
     def __init__(self, level):
+        self.prev = None
         self.cols = level["cols"]
         self.rows = level["rows"]
         self.arr = [["_" for _ in range(self.cols)] for _ in range(self.rows)]
@@ -39,11 +40,14 @@ class Grid:
                         self.arr[i][j].setCurrVal("🟤")
 
     def __eq__(self, other):
-        for i in range(self.rows):
-            for j in range(self.cols):
-                if self.arr[i][j].currVal != other.arr[i][j].currVal:
-                    return False
-        return True
+        if type(self) == type(other):
+            for i in range(self.rows):
+                for j in range(self.cols):
+                    if self.arr[i][j].currVal != other.arr[i][j].currVal:
+                        return False
+            return True
+        else:
+            return False
 
     def __str__(self):
         matrix = "\n"

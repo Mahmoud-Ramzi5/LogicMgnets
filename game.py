@@ -14,10 +14,9 @@ class Game:
         # self.algo.BFS(self.grid)
         # self.algo.DFS(self.grid)
         # self.algo.DFS_moves(self.grid, deepcopy(self.moves))
-        # self.algo.CallUCS(self.grid)
-        sol = self.algo.hill_climb(self.grid)
-        print(sol[1], end='')
-        print(f"current cost: {sol[0]}")
+        # self.algo.UCS(self.grid, 0)
+        self.algo.hill_climb(self.grid)
+
         # print(self.grid)
         # self.run()
 

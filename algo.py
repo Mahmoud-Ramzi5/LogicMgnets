@@ -9,31 +9,50 @@ class Algo:
         self.queue = []
         self.stack = []
 
+    def construct_path(self, grid):
+        path = []
+        curr = grid
+        while curr != None:
+            path.append(curr)
+            curr = curr.prev
+        path.reverse()
+        return path
+
     def BFS(self, grid):
-        self.visited.append(deepcopy(grid))
+        self.queue = []
+        self.visited = []
+        self.queue.append(grid)
 
-        # check win
-        if self.logic.checkWin(grid):
-            print("BFS WON")
-            return
+        while len(self.queue) > 0:
+            board = self.queue.pop(0)
+            self.visited.append(board)
 
-        for i in range(grid.rows):
-            for j in range(grid.cols):
-                if grid.arr[i][j].currVal == "🟣" or grid.arr[i][j].currVal == "🔴":
-                    for k in range(grid.rows):
-                        for l in range(grid.cols):
-                            temp = deepcopy(grid)
-                            if (
-                                temp.arr[k][l].currVal == "⚪"
-                                or temp.arr[k][l].currVal == "🟤"
-                            ):
-                                self.logic.moveCell(temp, (i, j), (k, l))
-                                if temp not in self.visited:
-                                    self.queue.append(temp)
+            # check win
+            if self.logic.checkWin(board):
+                print("BFS WON, Path: ->", end="")
+                for p in self.construct_path(board):
+                    print(p, end="")
+                print()
+                return True
 
-        board = self.queue.pop(0)
-        print(board)
-        self.BFS(board)
+            for i in range(board.rows):
+                for j in range(board.cols):
+                    if (
+                        board.arr[i][j].currVal == "🟣"
+                        or board.arr[i][j].currVal == "🔴"
+                    ):
+                        for k in range(board.rows):
+                            for l in range(board.cols):
+                                temp = deepcopy(board)
+                                temp.prev = board
+                                if (
+                                    temp.arr[k][l].currVal == "⚪"
+                                    or temp.arr[k][l].currVal == "🟤"
+                                ):
+                                    self.logic.moveCell(temp, (i, j), (k, l))
+                                    if temp not in self.visited:
+                                        self.queue.append(temp)
+        return False
 
     # def DFS(self, grid):
     #     self.visited.append(deepcopy(grid))
@@ -66,7 +85,10 @@ class Algo:
 
         # check win
         if self.logic.checkWin(grid):
-            print("DFS WON")
+            print("DFS WON, Path: ->", end="")
+            for p in self.construct_path(grid):
+                print(p, end="")
+            print()
             return True
 
         for i in range(grid.rows):
@@ -75,13 +97,13 @@ class Algo:
                     for k in range(grid.rows):
                         for l in range(grid.cols):
                             temp = deepcopy(grid)
+                            temp.prev = grid
                             if (
                                 temp.arr[k][l].currVal == "⚪"
                                 or temp.arr[k][l].currVal == "🟤"
                             ):
                                 self.logic.moveCell(temp, (i, j), (k, l))
                                 if temp not in self.visited:
-                                    print(temp)
                                     if self.DFS(temp):
                                         return True
         return False
@@ -91,7 +113,10 @@ class Algo:
 
         # check win
         if self.logic.checkWin(grid):
-            print("DFS With Moves WON")
+            print("DFS With Moves WON, Path: ->", end="")
+            for p in self.construct_path(grid):
+                print(p, end="")
+            print()
             return True
 
         if moves <= 0:
@@ -104,54 +129,60 @@ class Algo:
                     for k in range(grid.rows):
                         for l in range(grid.cols):
                             temp = deepcopy(grid)
+                            temp.prev = grid
                             if (
                                 temp.arr[k][l].currVal == "⚪"
                                 or temp.arr[k][l].currVal == "🟤"
                             ):
                                 self.logic.moveCell(temp, (i, j), (k, l))
                                 if (temp, moves) not in self.visited:
-                                    print(temp)
                                     if self.DFS_moves(temp, moves - 1):
                                         return True
         return False
 
-    def UCS(self, grid, moves, path):
-        self.visited.append((grid, moves))
+    def g_cost(self, current_moves):
+        return current_moves + 1
 
-        # check win
-        if self.logic.checkWin(grid):
-            path.append((grid, moves))
-            return True
-
-        for i in range(grid.rows):
-            for j in range(grid.cols):
-                if grid.arr[i][j].currVal == "🟣" or grid.arr[i][j].currVal == "🔴":
-                    for k in range(grid.rows):
-                        for l in range(grid.cols):
-                            temp = deepcopy(grid)
-                            if (
-                                temp.arr[k][l].currVal == "⚪"
-                                or temp.arr[k][l].currVal == "🟤"
-                            ):
-                                self.logic.moveCell(temp, (i, j), (k, l))
-                                if (temp, moves + 1) not in self.visited:
-                                    self.queue.append((temp, moves + 1))
-        return False
-
-    def CallUCS(self, grid):
-        path = []
-        path.append((grid, 0))
-        self.queue.append((grid, 0))
+    def UCS(self, grid, current_moves):
+        self.queue = []
+        self.visited = []
+        self.queue.append((current_moves, grid))
 
         while len(self.queue) > 0:
             board = self.queue.pop(0)
+            self.visited.append(board)
 
-            if self.UCS(board[0], board[1] + 1, path):
-                print("UCS WON")
-                for state in path:
-                    print(state[0])
-                    print(f"move number {state[1]}")
-                break
+            for i in range(board[1].rows):
+                for j in range(board[1].cols):
+                    if (
+                        board[1].arr[i][j].currVal == "🟣"
+                        or board[1].arr[i][j].currVal == "🔴"
+                    ):
+                        for k in range(board[1].rows):
+                            for l in range(board[1].cols):
+                                temp = deepcopy(board[1])
+                                temp.prev = board[1]
+                                if (
+                                    temp.arr[k][l].currVal == "⚪"
+                                    or temp.arr[k][l].currVal == "🟤"
+                                ):
+                                    self.logic.moveCell(temp, (i, j), (k, l))
+
+                                    move_cost = self.g_cost(current_moves)
+                                    total_moves = current_moves + move_cost
+
+                                    # check win
+                                    if self.logic.checkWin(temp):
+                                        print("UCS WON, Path: ->", end="")
+                                        for p in self.construct_path(temp):
+                                            print(p, end="")
+                                        print()
+                                        return
+
+                                    if (total_moves, temp) not in self.visited:
+                                        self.queue.append((total_moves, temp))
+                                        self.queue.sort(key=lambda q: q[0])
+        return False
 
     def hurestic(self, grid, pos_white):
         cost = 0
@@ -173,7 +204,6 @@ class Algo:
         return cost
 
     def hill_climb(self, initial):
-        print(initial)
         min_cost = self.hurestic(initial, self.level["pos_white"])
         grid = deepcopy(initial)
         best_grid = grid
@@ -186,6 +216,7 @@ class Algo:
                         for k in range(grid.rows):
                             for l in range(grid.cols):
                                 temp = deepcopy(grid)
+                                temp.prev = grid
                                 if (
                                     temp.arr[k][l].currVal == "⚪"
                                     or temp.arr[k][l].currVal == "🟤"
@@ -200,7 +231,11 @@ class Algo:
             best = min(neighbors, key=lambda neighbor: neighbor[0])
 
             if best[0] >= min_cost:
-                return (min_cost, best_grid)
+                print("Hill Climb Got this, Path: ->", end="")
+                for p in self.construct_path(best_grid):
+                    print(p, end="")
+                print(f"min cost got: {min_cost}")
+                return True
 
             min_cost = best[0]
             best_grid = best[1]
