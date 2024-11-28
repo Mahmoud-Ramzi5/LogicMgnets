@@ -15,8 +15,8 @@ class Game:
         # self.algo.DFS(self.grid)
         # self.algo.DFS_moves(self.grid, deepcopy(self.moves))
         # self.algo.UCS(self.grid, 0)
-        self.algo.hill_climb(self.grid)
-
+        # self.algo.hill_climb(self.grid)
+        self.algo.A_star(self.grid, 0)
         # print(self.grid)
         # self.run()
 

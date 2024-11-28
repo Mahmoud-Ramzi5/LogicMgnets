@@ -177,7 +177,7 @@ class Algo:
                                         for p in self.construct_path(temp):
                                             print(p, end="")
                                         print()
-                                        return
+                                        return True
 
                                     if (total_moves, temp) not in self.visited:
                                         self.queue.append((total_moves, temp))
@@ -243,3 +243,48 @@ class Algo:
 
             neighbors = []
         return None
+
+    def A_star(self, grid, current_moves):
+        self.queue = []
+        self.visited = []
+        h_cost = self.hurestic(grid, self.level["pos_white"])
+        g_cost = current_moves
+        total_cost = h_cost + g_cost
+        self.queue.append((total_cost, grid))
+
+        while len(self.queue) > 0:
+            board = self.queue.pop(0)
+            self.visited.append(board)
+
+            # check win
+            if self.logic.checkWin(board[1]):
+                print("A* WON, Path: ->", end="")
+                for p in self.construct_path(board[1]):
+                    print(p, end="")
+                print()
+                return True
+
+            for i in range(board[1].rows):
+                for j in range(board[1].cols):
+                    if (
+                        board[1].arr[i][j].currVal == "🟣"
+                        or board[1].arr[i][j].currVal == "🔴"
+                    ):
+                        for k in range(board[1].rows):
+                            for l in range(board[1].cols):
+                                temp = deepcopy(board[1])
+                                temp.prev = board[1]
+                                if (
+                                    temp.arr[k][l].currVal == "⚪"
+                                    or temp.arr[k][l].currVal == "🟤"
+                                ):
+                                    self.logic.moveCell(temp, (i, j), (k, l))
+
+                                    h_new = self.hurestic(temp, self.level["pos_white"])
+                                    move_cost = self.g_cost(current_moves)
+                                    new_cost = h_new + move_cost
+
+                                    if (new_cost, temp) not in self.visited:
+                                        self.queue.append((new_cost, temp))
+                                        self.queue.sort(key=lambda q: q[0])
+        return False
